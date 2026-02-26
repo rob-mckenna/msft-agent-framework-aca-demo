@@ -1,0 +1,47 @@
+@ChatAgent_HostAddress = http://localhost:5121
+
+# ─────────────────────────────────────────────────
+# REST endpoint: simple JSON chat (POST /chat)
+# ─────────────────────────────────────────────────
+
+# Start a new conversation
+POST {{ChatAgent_HostAddress}}/chat
+Content-Type: application/json
+
+{
+  "message": "Hello! What can you help me with today?"
+}
+
+###
+
+# Continue a conversation (replace <threadId> with the ID from the previous response)
+POST {{ChatAgent_HostAddress}}/chat
+Content-Type: application/json
+
+{
+  "message": "Can you tell me more about that?",
+  "threadId": "<threadId>"
+}
+
+###
+
+# ─────────────────────────────────────────────────
+# Agent Framework endpoint: Bot Framework Activity Protocol (POST /api/messages)
+# Use with the Bot Framework Emulator or any Bot Framework channel
+# ─────────────────────────────────────────────────
+
+POST {{ChatAgent_HostAddress}}/api/messages
+Content-Type: application/json
+
+{
+  "type": "message",
+  "id": "1",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "channelId": "directline",
+  "from": { "id": "user1", "name": "User" },
+  "conversation": { "id": "conv1" },
+  "recipient": { "id": "agent", "name": "Agent" },
+  "text": "Hello! What can you help me with today?"
+}
+
+###
