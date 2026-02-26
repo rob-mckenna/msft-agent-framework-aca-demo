@@ -1,6 +1,22 @@
 @ChatAgent_HostAddress = http://localhost:5121
 
-GET {{ChatAgent_HostAddress}}/weatherforecast/
-Accept: application/json
+# Start a new conversation
+POST {{ChatAgent_HostAddress}}/chat
+Content-Type: application/json
+
+{
+  "message": "Hello! What can you help me with today?"
+}
+
+###
+
+# Continue a conversation (replace <threadId> with the ID from the previous response)
+POST {{ChatAgent_HostAddress}}/chat
+Content-Type: application/json
+
+{
+  "message": "Can you tell me more about that?",
+  "threadId": "<threadId>"
+}
 
 ###
