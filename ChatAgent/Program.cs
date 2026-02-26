@@ -1,4 +1,7 @@
+using ChatAgent.Agents;
 using ChatAgent.Services;
+using Microsoft.Agents.Hosting.AspNetCore;
+using Microsoft.Agents.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +14,18 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "ChatAgent API",
         Version = "v1",
-        Description = "A basic AI chat agent built using the Microsoft Semantic Kernel Agent Framework and Azure AI Foundry."
+        Description = "A basic AI chat agent built using the Microsoft Agent Framework and Azure OpenAI."
     });
 });
 
-// Register the chat agent service
+// Register in-memory storage for agent conversation state
+builder.Services.AddSingleton<IStorage, MemoryStorage>();
+
+// Register the Microsoft Agent Framework agent and its infrastructure (CloudAdapter, etc.)
+builder.AddAgentApplicationOptions();
+builder.AddAgent<BasicChatAgent>();
+
+// Register the REST chat service (backs the POST /chat endpoint)
 builder.Services.AddSingleton<IChatAgentService, ChatAgentService>();
 
 var app = builder.Build();
@@ -29,5 +39,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+// Map the Bot Framework Activity Protocol endpoint (POST /api/messages)
+// requireAuth: false is suitable for development; set to true for production with proper Bot Framework credentials
+app.MapAgentEndpoints(requireAuth: false);
 
 app.Run();
